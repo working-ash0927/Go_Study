@@ -4,8 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"slices"
-	"strconv"
 )
 
 func main() {
@@ -13,19 +11,18 @@ func main() {
 	var writer *bufio.Writer = bufio.NewWriter(os.Stdout)
 	defer writer.Flush()
 
-	arr := make([]int, 9)
-	for i, _ := range arr {
+	var students [30]int
+	var N int
+	for range 28 {
 		scanner.Scan()
-		n, _ := strconv.Atoi(scanner.Text())
-		arr[i] = n
+		line := scanner.Text()
+		fmt.Sscan(line, &N)
+		students[N-1] = N
 	}
-	r1 := slices.Max(arr)
-	fmt.Println(r1)
 
-	for i := 0; i < len(arr); i++ {
-		if arr[i] == r1 {
+	for i, v := range students {
+		if v == 0 {
 			fmt.Println(i + 1)
-			break
 		}
 	}
 }
