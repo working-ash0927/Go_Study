@@ -1,0 +1,42 @@
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# macOS 썸네일 캐시
+._*
+
+# macOS에서 네트워크 드라이브 연결 시 생성되는 파일
+.Spotlight-V100
+.Trashes
+
+# macOS에서 생성되는 메타데이터 폴더
+*.swp
+*.swo
+
+# VSCode 설정 파일
+.vscode/
+
+# Node.js
+node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# 로그 파일
+*.log
+
+# 빌드 결과물
+dist/
+build/
+out/
+
+# 환경 설정 파일
+.env
+.env.*
+
+# 기타 IDE 설정
+.idea/
+*.iml
+*.sublime-workspace
+*.sublime-project
