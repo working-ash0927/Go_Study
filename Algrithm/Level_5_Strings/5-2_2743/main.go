@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strconv"
 )
 
 func main() {
@@ -15,7 +14,6 @@ func main() {
 	scanner.Scan()
 	S := scanner.Text()
 
-	scanner.Scan()
-	i, _ := strconv.Atoi(scanner.Text())
-	fmt.Println(string(S[i-1]))
+	fmt.Println(len(S))
+
 }

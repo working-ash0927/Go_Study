@@ -5,9 +5,16 @@
     - <https://code.visualstudio.com/docs/languages/markdown#_markdown-preview>
 
 ## 언어 특징
+
 1. Python 처럼 입력값의 동적인 변수 바인딩은 불가능함. 따라서 slice, map 등의 수동 처리가 필요. (의도된 범주 내에서만 처리)
 
+2. rune 은 하나의 문자를 표현하는 유니코드 포인트. (int32 alias, 4 bytes)
+
+    String 문자열의 한글자는 rune이며, 이를 사람이보기 위한 문자열로 보여주기 위해선 다시 string 형변환이 필요함.
+
+3. 문자열은 불변속성 (immutable) 을 가짐. 따라서 문자열 수정시에는 바이트 배열 관리 혹은 전용 패키지 ( strings ) 기능 활용을 권장함 (아래 활용법에 후술)
 ## 문법
+
 1. 쿼터 (`) 는 다중 문자열을 출력하는 경우 활용
 2. 형 변환 주의
 
@@ -22,7 +29,7 @@
     이를 위해선 슬라이스 형태로 동적 배열을 활용해야함
 
     ```go
-    (tmp := make([]int, n))
+    tmp := make([]int, n)
     ```
 
 5. 데이터 입력 처리 방식
@@ -59,9 +66,14 @@
         var writer *bufio.Writer = bufio.NewWriter(os.Stdout)
 
         defer writer.Flush()
-        l, _ := reader.ReadString('\n')
-        l = strings.TrimSpace(l) // 개행 제거
-        N, _ := strconv.Atoi(l)
+        l, err := reader.ReadString('\n')
+        if err != nil {
+            return // 에러 발생
+        }
+        l = strings.TrimSpace(l)
+        if l == "" {
+            return // 입력 없으면 끝내기
+        }
         ```
 
 6. 초기값 0이 출력되는거 방지
@@ -93,6 +105,12 @@
 11. Go 1.21 이상부터는 Min, Max 숫자 탐색을 위한 패키지는 Slices 에 존재.
     구버전은 수동 계산식을 작성해야 하며 Math 는 Float 데이터의 1:1 비교만 가능.
 
+12. String 은 여러 rune (bytes) 의 연속된 값을 말함. (그래서 문자"열")
+    즉, string 값 꺼내서 하나의 문자로 쓸라면 string() 으로 형변환 필요
+
+13. csv 데이터를 다룰때는 `strings.Split` 사용할 것.
+    - `strings.Split` : 지정 구분자로 나뉜 데이터의 빈 문자열을 포함
+    - `strings.Fileds` : 지정 구분자로 나눈 데이터의 빈 문자열을 제거.
 
 ## 응용
 1. bufio.NewScanner 버퍼 사이즈 증가 예시코드
@@ -133,3 +151,55 @@
         fmt.Println(slices.Min(result), slices.Max(result))
     }
     ```
+2. 문자열 이어붙히기 최적화
+
+    ```go
+    // 처리 비용 비싸고 처리 문자열이 길수록 시간 제곱배
+    var result string
+    for _, v := range s {
+        for range r {
+            result += string(v) // 문자열 복사 후 새로 쓰기 누적됨
+        }
+    }
+    fmt.Println(result)
+
+    // 조금 더 최적화, 문자열을 효율적으로 이어붙히기 위해 설계된 타입
+    // 내부 버퍼에 이어붙힐 데이터를 추가하다가 마지막에 최동 데이터를 반환.
+    // []byte 슬라이스에 모았다가 변환해도 비슷한 효과를 누릴 수 있음
+    import strings
+    var builder strings.Builder
+    for _, v := range s {
+        for range r {
+            builder.WriteRune(v) // rune (한글자) 추가
+            //builter.WriteString("ASDASD") // 문자열 추가
+        }
+    }
+    fmt.Fprintln(writer, builder.String()) // 변수할당 없이 빠르게 출력
+    result := builder.String() // Builder에 저장된 데이터를 문자열로 변수에 할당
+    
+    // 제일 빠른 방식, 출력 버퍼에 직접 쓰기. (중간 문자열을 굳이 만들필요가 없을떄)
+    for _, v := range s {
+        for i := 0; i < r; i++ {
+            writer.WriteRune(v)
+        }
+    }
+    writer.WriteByte('\n')
+    ```
+
+3. 문자열 뒤집기 함수 만들기
+
+    ```go
+    
+    func reverseString(s string) string {
+        bs := []byte(s)
+        for i, j := 0, len(bs)-1; i < j; i, j = i+1, j-1 {
+            bs[i], bs[j] = bs[j], bs[i]
+        }
+        return string(bs)
+    }
+    // 자동으로 위치 바꿔주네
+    ```
+
+4. 참고
+    - 아스키 테이블
+    ![image](./img/ascii.png)

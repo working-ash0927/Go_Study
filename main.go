@@ -5,7 +5,9 @@ import (
 )
 
 func main() {
-
-	a, b := 3, 4
-	fmt.Println(b / a / 2)
+	a := byte('A')
+	b := uint8(65)
+	// fmt.Println(bool(a == b))
+	fmt.Println(a)
+	fmt.Print(string(b))
 }

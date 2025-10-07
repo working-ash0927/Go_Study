@@ -13,9 +13,17 @@ func main() {
 	defer writer.Flush()
 
 	scanner.Scan()
-	S := scanner.Text()
+	N, _ := strconv.Atoi(scanner.Text())
 
 	scanner.Scan()
-	i, _ := strconv.Atoi(scanner.Text())
-	fmt.Println(string(S[i-1]))
+	data := scanner.Text()
+
+	var result int
+	for i := range N {
+		n, _ := strconv.Atoi(string(data[i]))
+		result += n
+	}
+
+	fmt.Println(result)
+
 }
