@@ -76,12 +76,12 @@
         }
         ```
 
-6. 초기값 0이 출력되는거 방지
+6. slice 는 array의 뷰.
+실제로는 배열의 포인터, 길이와 용량 정보를 담고 있을 뿐이기에, 형변환 시 성능 하락이 발생하지 않음
 
     ```go
-    if _, err := fmt.Fscan(reader, &a, &b); err != nil {
-        continue
-    }
+    input := [...]int {1,2,3,4,5,6} // 길이 6 고정길이 배열
+    toslice := input[:] // 슬라이스 형변환
     ```
 
 7. 언어별 빠른 I/O 처리 방식 (문제 백준 15552)
@@ -200,6 +200,34 @@
     // 자동으로 위치 바꿔주네
     ```
 
-4. 참고
+4. 문자열 중복제거 함수
+
+    ```go
+    func removeDuplicate(str string) []byte {
+        tmp := []byte(str)
+        var result []byte
+        for i, v := range tmp {
+            if i == 0 {
+                result = append(result, v)
+            }
+            if slices.Contains(result, v) {
+                continue
+            }
+            result = append(result, v)
+        }
+        return result
+    }
+    ```
+
+5. 참고
     - 아스키 테이블
     ![image](./img/ascii.png)
+
+    - 경과시간 체크
+
+        ```go
+        start := time.Now()
+        defer func() {
+            fmt.Printf("Elapsed: %v ms\n", float64(time.Since(start).Microseconds())/1000)
+        }()
+        ```
