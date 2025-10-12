@@ -16,7 +16,7 @@ func main() {
 
 	for i := range 5 {
 		reader.Scan()
-		data[i] = reader.Text()
+		data[i] = reader.Text() // 한줄씩 읽어서 가장 긴 입력값 길이 체크
 		if len(data[i]) > maxlen {
 			maxlen = len(data[i])
 		}

@@ -66,14 +66,15 @@
         var writer *bufio.Writer = bufio.NewWriter(os.Stdout)
 
         defer writer.Flush()
-        l, err := reader.ReadString('\n')
+        l, _ := reader.ReadBytes('\n') // 혹은 ReadString
         if err != nil {
             return // 에러 발생
         }
-        l = strings.TrimSpace(l)
-        if l == "" {
+        fields := bytes.Fields(l) // 개행문자 구분이 아니면 []string 형태가 되는점 참고
+        if len(fields) == 0 {
             return // 입력 없으면 끝내기
         }
+        N, _ := strconv.Atoi(string(fields[0]))
         ```
 
 6. slice 는 array의 뷰.
@@ -113,19 +114,10 @@
     - `strings.Fileds` : 지정 구분자로 나눈 데이터의 빈 문자열을 제거.
 
 ## 응용
+
 1. bufio.NewScanner 버퍼 사이즈 증가 예시코드
 
     ```go
-    package main
-
-    import (
-        "bufio"
-        "fmt"
-        "os"
-        "slices"
-        "strconv"
-        "strings"
-    )
     func main() {
         var scanner *bufio.Scanner = bufio.NewScanner(os.Stdin)
         var writer *bufio.Writer = bufio.NewWriter(os.Stdout)
@@ -151,19 +143,11 @@
         fmt.Println(slices.Min(result), slices.Max(result))
     }
     ```
+
 2. 문자열 이어붙히기 최적화
 
     ```go
-    // 처리 비용 비싸고 처리 문자열이 길수록 시간 제곱배
-    var result string
-    for _, v := range s {
-        for range r {
-            result += string(v) // 문자열 복사 후 새로 쓰기 누적됨
-        }
-    }
-    fmt.Println(result)
-
-    // 조금 더 최적화, 문자열을 효율적으로 이어붙히기 위해 설계된 타입
+    ////// 문자열 누적시에 무조건 사용할 것 ////
     // 내부 버퍼에 이어붙힐 데이터를 추가하다가 마지막에 최동 데이터를 반환.
     // []byte 슬라이스에 모았다가 변환해도 비슷한 효과를 누릴 수 있음
     import strings
