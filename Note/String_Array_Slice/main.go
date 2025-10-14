@@ -27,7 +27,6 @@ func main() {
 
 	var builder strings.Builder
 	for i := range 26 {
-
 		builder.WriteRune(rune('A' + i))
 	}
 	fmt.Println(builder.String())
