@@ -30,4 +30,16 @@ func main() {
 		builder.WriteRune(rune('A' + i))
 	}
 	fmt.Println(builder.String())
+
+	s3 := "ZXC가나다"
+	for i, v := range s3 {
+		fmt.Println(i, v)
+	}
+
+	a := [3]int{1, 2, 3}
+	b := [3]int{4, 5, 6}
+
+	a = b
+
+	fmt.Println(a, b)
 }
